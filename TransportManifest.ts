@@ -1,5 +1,5 @@
-import Unit from '@civ-clone/core-unit/Unit';
 import { ITransport } from './Transport';
+import Unit from '@civ-clone/core-unit/Unit';
 
 export interface ITransportManifest {
   transport(): ITransport;
