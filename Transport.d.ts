@@ -1,6 +1,5 @@
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { TransportRegistry } from './TransportRegistry';
-import { IConstructor } from '@civ-clone/core-registry/Registry';
 import Unit, { IUnit } from '@civ-clone/core-unit/Unit';
 export interface ITransport extends IUnit {
   canStow(unit: Unit): boolean;
@@ -11,8 +10,13 @@ export interface ITransport extends IUnit {
   stow(unit: Unit): boolean;
   unload(unit: Unit): boolean;
 }
-export declare const Transport: (Base: IConstructor<Unit>) => {
-  new (...args: any[]): {
+export declare const Transport: (Base: typeof Unit) => {
+  new (
+    city: import('@civ-clone/core-city/City').City | null,
+    player: import('@civ-clone/core-player/Player').Player,
+    tile: import('@civ-clone/core-world/Tile').Tile,
+    ruleRegistry?: RuleRegistry
+  ): {
     '__#27@#ruleRegistry': RuleRegistry;
     '__#27@#transportRegistry': TransportRegistry;
     canStow(unit: Unit): boolean;
@@ -87,5 +91,9 @@ export declare const Transport: (Base: IConstructor<Unit>) => {
       additionalDataRegistry?: import('@civ-clone/core-data-object/AdditionalDataRegistry').AdditionalDataRegistry
     ): import('@civ-clone/core-data-object/DataObject').ObjectMap;
   };
+  build(
+    city: import('@civ-clone/core-city/City').City,
+    ruleRegistry?: RuleRegistry
+  ): Unit;
 };
 export default Transport;

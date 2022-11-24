@@ -22,7 +22,7 @@ export interface ITransport extends IUnit {
   unload(unit: Unit): boolean;
 }
 
-export const Transport = (Base: IConstructor<Unit>) =>
+export const Transport = (Base: typeof Unit) =>
   class Transport extends Base implements ITransport {
     #ruleRegistry: RuleRegistry = ruleRegistryInstance;
     #transportRegistry: TransportRegistry = transportRegistryInstance;
