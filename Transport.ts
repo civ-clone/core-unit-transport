@@ -6,12 +6,11 @@ import {
   TransportRegistry,
   instance as transportRegistryInstance,
 } from './TransportRegistry';
-import { IConstructor } from '@civ-clone/core-registry/Registry';
+import { Unit, IUnit } from '@civ-clone/core-unit/Unit';
 import Stowed from './Rules/Stowed';
-import TransportManifest from './TransportManifest';
-import Unit, { IUnit } from '@civ-clone/core-unit/Unit';
-import Unloaded from './Rules/Unloaded';
 import Tile from '@civ-clone/core-world/Tile';
+import TransportManifest from './TransportManifest';
+import Unloaded from './Rules/Unloaded';
 
 export interface ITransport extends IUnit {
   canStow(unit: Unit): boolean;
@@ -22,6 +21,34 @@ export interface ITransport extends IUnit {
   stow(unit: Unit, sourceTile: Tile): boolean;
   unload(unit: Unit): boolean;
 }
+
+export const isTransport = (object: unknown): boolean => {
+  if (object instanceof Unit) {
+    return [
+      'canStow',
+      'capacity',
+      'cargo',
+      'hasCapacity',
+      'hasCargo',
+      'stow',
+      'unload',
+    ].every((method) => typeof object?.[method as keyof Unit] === 'function');
+  }
+
+  if (object instanceof Function) {
+    return [
+      'canStow',
+      'capacity',
+      'cargo',
+      'hasCapacity',
+      'hasCargo',
+      'stow',
+      'unload',
+    ].every((method) => typeof object.prototype[method] === 'function');
+  }
+
+  return false;
+};
 
 export const Transport = (Base: typeof Unit) =>
   class Transport extends Base implements ITransport {

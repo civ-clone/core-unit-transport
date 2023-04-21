@@ -11,12 +11,39 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
     return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Transport = void 0;
+exports.Transport = exports.isTransport = void 0;
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const TransportRegistry_1 = require("./TransportRegistry");
+const Unit_1 = require("@civ-clone/core-unit/Unit");
 const Stowed_1 = require("./Rules/Stowed");
 const TransportManifest_1 = require("./TransportManifest");
 const Unloaded_1 = require("./Rules/Unloaded");
+const isTransport = (object) => {
+    if (object instanceof Unit_1.Unit) {
+        return [
+            'canStow',
+            'capacity',
+            'cargo',
+            'hasCapacity',
+            'hasCargo',
+            'stow',
+            'unload',
+        ].every((method) => typeof (object === null || object === void 0 ? void 0 : object[method]) === 'function');
+    }
+    if (object instanceof Function) {
+        return [
+            'canStow',
+            'capacity',
+            'cargo',
+            'hasCapacity',
+            'hasCargo',
+            'stow',
+            'unload',
+        ].every((method) => typeof object.prototype[method] === 'function');
+    }
+    return false;
+};
+exports.isTransport = isTransport;
 const Transport = (Base) => { var _Transport_ruleRegistry, _Transport_transportRegistry, _a; return _a = class Transport extends Base {
         constructor() {
             super(...arguments);

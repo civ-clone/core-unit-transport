@@ -13,7 +13,7 @@ class TransportRegistry extends EntityRegistry_1.EntityRegistry {
     getByUnit(unit) {
         const manifests = this.getBy('unit', unit);
         if (manifests.length !== 1) {
-            throw new TypeError(`Wrong number of results.`);
+            throw new TypeError(`Wrong number of results. (${manifests.length})`);
         }
         return manifests[0];
     }
