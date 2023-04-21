@@ -1,6 +1,6 @@
 {
   "name": "@civ-clone/core-unit-transport",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository": "git@github.com:civ-clone/core-unit-transport.git",
   "keywords": [
     "typescript",
@@ -35,6 +35,7 @@
     "@civ-clone/core-registry": "^0.1.0",
     "@civ-clone/core-rule": "^0.1.2",
     "@civ-clone/core-unit": "^0.1.0",
-    "@civ-clone/core-world": "^0.1.9"
+    "@civ-clone/core-world": "^0.1.9",
+    "@civ-clone/core-yield": "^0.1.0"
   }
 }

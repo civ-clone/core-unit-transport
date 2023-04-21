@@ -12,6 +12,7 @@ var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transport = exports.isTransport = void 0;
+const Yields_1 = require("./Yields");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const TransportRegistry_1 = require("./TransportRegistry");
 const Unit_1 = require("@civ-clone/core-unit/Unit");
@@ -24,6 +25,7 @@ const isTransport = (object) => {
             'canStow',
             'capacity',
             'cargo',
+            'cargoWeight',
             'hasCapacity',
             'hasCargo',
             'stow',
@@ -35,6 +37,7 @@ const isTransport = (object) => {
             'canStow',
             'capacity',
             'cargo',
+            'cargoWeight',
             'hasCapacity',
             'hasCargo',
             'stow',
@@ -54,16 +57,20 @@ const Transport = (Base) => { var _Transport_ruleRegistry, _Transport_transportR
             return !this.cargo().includes(unit) && this.hasCapacity();
         }
         capacity() {
-            return 0;
+            const [unitYield] = this.yield(new Yields_1.Capacity());
+            return unitYield;
         }
         cargo() {
             return __classPrivateFieldGet(this, _Transport_transportRegistry, "f")
                 .getByTransport(this)
                 .map((manifest) => manifest.unit());
         }
+        cargoWeight() {
+            const [unitYield] = this.yield(new Yields_1.CargoWeight());
+            return unitYield;
+        }
         hasCapacity() {
-            return (__classPrivateFieldGet(this, _Transport_transportRegistry, "f").getByTransport(this).length <
-                this.capacity());
+            return this.cargoWeight().value() < this.capacity().value();
         }
         hasCargo() {
             return (__classPrivateFieldGet(this, _Transport_transportRegistry, "f").getByTransport(this).length > 0);

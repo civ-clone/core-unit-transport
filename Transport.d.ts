@@ -1,11 +1,13 @@
+import { Capacity, CargoWeight } from './Yields';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { TransportRegistry } from './TransportRegistry';
 import { Unit, IUnit } from '@civ-clone/core-unit/Unit';
 import Tile from '@civ-clone/core-world/Tile';
 export interface ITransport extends IUnit {
   canStow(unit: Unit): boolean;
-  capacity(): number;
+  capacity(): Capacity;
   cargo(): Unit[];
+  cargoWeight(): CargoWeight;
   hasCapacity(): boolean;
   hasCargo(): boolean;
   stow(unit: Unit, sourceTile: Tile): boolean;
@@ -19,27 +21,28 @@ export declare const Transport: (Base: typeof Unit) => {
     tile: Tile,
     ruleRegistry?: RuleRegistry
   ): {
-    '__#29@#ruleRegistry': RuleRegistry;
-    '__#29@#transportRegistry': TransportRegistry;
+    '__#30@#ruleRegistry': RuleRegistry;
+    '__#30@#transportRegistry': TransportRegistry;
     canStow(unit: Unit): boolean;
-    capacity(): number;
+    capacity(): Capacity;
     cargo(): Unit[];
+    cargoWeight(): CargoWeight;
     hasCapacity(): boolean;
     hasCargo(): boolean;
     setRuleRegistry(ruleRegistry: RuleRegistry): void;
     setTransportRegistry(transportRegistry: TransportRegistry): void;
     stow(unit: Unit, sourceTile?: Tile): boolean;
     unload(unit: Unit): boolean;
-    '__#27@#active': boolean;
-    '__#27@#busy': import('@civ-clone/core-unit/Rules/Busy').Busy | null;
-    '__#27@#city': import('@civ-clone/core-city/City').City | null;
-    '__#27@#destroyed': boolean;
-    '__#27@#moves': import('@civ-clone/core-unit/Yields').Moves;
-    '__#27@#player': import('@civ-clone/core-player/Player').Player;
-    '__#27@#ruleRegistry': RuleRegistry;
-    '__#27@#status': import('@civ-clone/core-unit/Action').Action | null;
-    '__#27@#tile': Tile;
-    '__#27@#waiting': boolean;
+    '__#28@#active': boolean;
+    '__#28@#busy': import('@civ-clone/core-unit/Rules/Busy').Busy | null;
+    '__#28@#city': import('@civ-clone/core-city/City').City | null;
+    '__#28@#destroyed': boolean;
+    '__#28@#moves': import('@civ-clone/core-unit/Yields').Moves;
+    '__#28@#player': import('@civ-clone/core-player/Player').Player;
+    '__#28@#ruleRegistry': RuleRegistry;
+    '__#28@#status': import('@civ-clone/core-unit/Action').Action | null;
+    '__#28@#tile': Tile;
+    '__#28@#waiting': boolean;
     action(
       action: import('@civ-clone/core-unit/Action').Action,
       ...args: any[]
@@ -80,8 +83,8 @@ export declare const Transport: (Base: typeof Unit) => {
     yield(
       ...yields: import('@civ-clone/core-yield/Yield').Yield[]
     ): import('@civ-clone/core-yield/Yield').Yield[];
-    '__#9@#id': string;
-    '__#9@#keys': (keyof any)[];
+    '__#3@#id': string;
+    '__#3@#keys': (keyof any)[];
     addKey(...keys: (keyof any)[]): void;
     id(): string;
     keys(): (keyof any)[];

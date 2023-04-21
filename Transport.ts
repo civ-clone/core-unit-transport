@@ -1,3 +1,4 @@
+import { Capacity, CargoWeight } from './Yields';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
@@ -14,8 +15,9 @@ import Unloaded from './Rules/Unloaded';
 
 export interface ITransport extends IUnit {
   canStow(unit: Unit): boolean;
-  capacity(): number;
+  capacity(): Capacity;
   cargo(): Unit[];
+  cargoWeight(): CargoWeight;
   hasCapacity(): boolean;
   hasCargo(): boolean;
   stow(unit: Unit, sourceTile: Tile): boolean;
@@ -28,6 +30,7 @@ export const isTransport = (object: unknown): boolean => {
       'canStow',
       'capacity',
       'cargo',
+      'cargoWeight',
       'hasCapacity',
       'hasCargo',
       'stow',
@@ -40,6 +43,7 @@ export const isTransport = (object: unknown): boolean => {
       'canStow',
       'capacity',
       'cargo',
+      'cargoWeight',
       'hasCapacity',
       'hasCargo',
       'stow',
@@ -59,8 +63,10 @@ export const Transport = (Base: typeof Unit) =>
       return !this.cargo().includes(unit) && this.hasCapacity();
     }
 
-    capacity(): number {
-      return 0;
+    capacity(): Capacity {
+      const [unitYield] = this.yield(new Capacity());
+
+      return unitYield;
     }
 
     cargo(): Unit[] {
@@ -69,11 +75,14 @@ export const Transport = (Base: typeof Unit) =>
         .map((manifest: TransportManifest): Unit => manifest.unit());
     }
 
+    cargoWeight(): CargoWeight {
+      const [unitYield] = this.yield(new CargoWeight());
+
+      return unitYield;
+    }
+
     hasCapacity(): boolean {
-      return (
-        this.#transportRegistry.getByTransport(this as ITransport).length <
-        this.capacity()
-      );
+      return this.cargoWeight().value() < this.capacity().value();
     }
 
     hasCargo(): boolean {
