@@ -48,11 +48,11 @@ const Transport = (Base) => { var _Transport_ruleRegistry, _Transport_transportR
         setTransportRegistry(transportRegistry) {
             __classPrivateFieldSet(this, _Transport_transportRegistry, transportRegistry, "f");
         }
-        stow(unit) {
+        stow(unit, sourceTile = unit.tile()) {
             if (!this.hasCapacity() || !this.canStow(unit)) {
                 return false;
             }
-            __classPrivateFieldGet(this, _Transport_transportRegistry, "f").register(new TransportManifest_1.default(this, unit));
+            __classPrivateFieldGet(this, _Transport_transportRegistry, "f").register(new TransportManifest_1.default(this, unit, sourceTile));
             __classPrivateFieldGet(this, _Transport_ruleRegistry, "f").process(Stowed_1.default, unit, this);
             return true;
         }

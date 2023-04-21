@@ -1,6 +1,6 @@
 {
   "name": "@civ-clone/core-unit-transport",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "repository": "git@github.com:civ-clone/core-unit-transport.git",
   "keywords": [
     "typescript",
@@ -14,7 +14,7 @@
     "prettier:check": "prettier --config .prettierrc '**/*.ts'",
     "prettier:format": "prettier --config .prettierrc '**/*.ts' --write",
     "test": "ts-mocha ./tests/*.test.ts",
-    "test:coverage": "c8 ts-mocha ./tests/*.test.ts",
+    "test:coverage": "c8 --all -x '**/*.ts' -x 'index.*' -x 'register*.*' ts-mocha ./tests/*.test.ts",
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {

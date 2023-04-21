@@ -1,24 +1,25 @@
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { TransportRegistry } from './TransportRegistry';
 import Unit, { IUnit } from '@civ-clone/core-unit/Unit';
+import Tile from '@civ-clone/core-world/Tile';
 export interface ITransport extends IUnit {
   canStow(unit: Unit): boolean;
   capacity(): number;
   cargo(): Unit[];
   hasCapacity(): boolean;
   hasCargo(): boolean;
-  stow(unit: Unit): boolean;
+  stow(unit: Unit, sourceTile: Tile): boolean;
   unload(unit: Unit): boolean;
 }
 export declare const Transport: (Base: typeof Unit) => {
   new (
     city: import('@civ-clone/core-city/City').City | null,
     player: import('@civ-clone/core-player/Player').Player,
-    tile: import('@civ-clone/core-world/Tile').Tile,
+    tile: Tile,
     ruleRegistry?: RuleRegistry
   ): {
-    '__#27@#ruleRegistry': RuleRegistry;
-    '__#27@#transportRegistry': TransportRegistry;
+    '__#29@#ruleRegistry': RuleRegistry;
+    '__#29@#transportRegistry': TransportRegistry;
     canStow(unit: Unit): boolean;
     capacity(): number;
     cargo(): Unit[];
@@ -26,30 +27,28 @@ export declare const Transport: (Base: typeof Unit) => {
     hasCargo(): boolean;
     setRuleRegistry(ruleRegistry: RuleRegistry): void;
     setTransportRegistry(transportRegistry: TransportRegistry): void;
-    stow(unit: Unit): boolean;
+    stow(unit: Unit, sourceTile?: Tile): boolean;
     unload(unit: Unit): boolean;
-    '__#25@#active': boolean;
-    '__#25@#busy': import('@civ-clone/core-unit/Rules/Busy').Busy | null;
-    '__#25@#city': import('@civ-clone/core-city/City').City | null;
-    '__#25@#destroyed': boolean;
-    '__#25@#moves': import('@civ-clone/core-unit/Yields').Moves;
-    '__#25@#player': import('@civ-clone/core-player/Player').Player;
-    '__#25@#ruleRegistry': RuleRegistry;
-    '__#25@#status': import('@civ-clone/core-unit/Action').Action | null;
-    '__#25@#tile': import('@civ-clone/core-world/Tile').Tile;
-    '__#25@#waiting': boolean;
+    '__#27@#active': boolean;
+    '__#27@#busy': import('@civ-clone/core-unit/Rules/Busy').Busy | null;
+    '__#27@#city': import('@civ-clone/core-city/City').City | null;
+    '__#27@#destroyed': boolean;
+    '__#27@#moves': import('@civ-clone/core-unit/Yields').Moves;
+    '__#27@#player': import('@civ-clone/core-player/Player').Player;
+    '__#27@#ruleRegistry': RuleRegistry;
+    '__#27@#status': import('@civ-clone/core-unit/Action').Action | null;
+    '__#27@#tile': Tile;
+    '__#27@#waiting': boolean;
     action(
       action: import('@civ-clone/core-unit/Action').Action,
       ...args: any[]
     ): void;
     actions(
-      to?:
-        | import('@civ-clone/core-world/Tile').Tile
-        | import('@civ-clone/core-world/Tile').INeighbouringTiles,
-      from?: import('@civ-clone/core-world/Tile').Tile
+      to?: Tile | import('@civ-clone/core-world/Tile').INeighbouringTiles,
+      from?: Tile
     ): import('@civ-clone/core-unit/Action').Action[];
     actionsForNeighbours(
-      from?: import('@civ-clone/core-world/Tile').Tile
+      from?: Tile
     ): import('@civ-clone/core-unit/Unit').IActionsForNeighbours;
     activate(): void;
     active(): boolean;
@@ -72,8 +71,8 @@ export declare const Transport: (Base: typeof Unit) => {
     setStatus(
       status: import('@civ-clone/core-unit/Action').Action | null
     ): void;
-    tile(): import('@civ-clone/core-world/Tile').Tile;
-    setTile(tile: import('@civ-clone/core-world/Tile').Tile): void;
+    tile(): Tile;
+    setTile(tile: Tile): void;
     visibility(): import('@civ-clone/core-unit/Yields').Visibility;
     waiting(): boolean;
     setWaiting(waiting?: boolean): void;
@@ -94,6 +93,6 @@ export declare const Transport: (Base: typeof Unit) => {
   build(
     city: import('@civ-clone/core-city/City').City,
     ruleRegistry?: RuleRegistry
-  ): Unit;
+  ): import('@civ-clone/core-city-build/Buildable').BuildableInstance;
 };
 export default Transport;
