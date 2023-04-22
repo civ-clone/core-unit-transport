@@ -19,6 +19,7 @@ const Unit_1 = require("@civ-clone/core-unit/Unit");
 const Stowed_1 = require("./Rules/Stowed");
 const TransportManifest_1 = require("./TransportManifest");
 const Unloaded_1 = require("./Rules/Unloaded");
+const CanStow_1 = require("./Rules/CanStow");
 const isTransport = (object) => {
     if (object instanceof Unit_1.Unit) {
         return [
@@ -54,7 +55,9 @@ const Transport = (Base) => { var _Transport_ruleRegistry, _Transport_transportR
             _Transport_transportRegistry.set(this, TransportRegistry_1.instance);
         }
         canStow(unit) {
-            return !this.cargo().includes(unit) && this.hasCapacity();
+            return __classPrivateFieldGet(this, _Transport_ruleRegistry, "f")
+                .process(CanStow_1.default, this, unit)
+                .every((result) => result);
         }
         capacity() {
             const [unitYield] = this.yield(new Yields_1.Capacity());

@@ -12,6 +12,7 @@ import Stowed from './Rules/Stowed';
 import Tile from '@civ-clone/core-world/Tile';
 import TransportManifest from './TransportManifest';
 import Unloaded from './Rules/Unloaded';
+import CanStow from './Rules/CanStow';
 
 export interface ITransport extends IUnit {
   canStow(unit: Unit): boolean;
@@ -60,7 +61,9 @@ export const Transport = (Base: typeof Unit) =>
     #transportRegistry: TransportRegistry = transportRegistryInstance;
 
     canStow(unit: Unit): boolean {
-      return !this.cargo().includes(unit) && this.hasCapacity();
+      return this.#ruleRegistry
+        .process(CanStow, this as ITransport, unit)
+        .every((result) => result);
     }
 
     capacity(): Capacity {
