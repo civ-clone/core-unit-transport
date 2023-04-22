@@ -18,6 +18,7 @@ import Unit from '@civ-clone/core-unit/Unit';
 import Yield from '@civ-clone/core-unit/Rules/Yield';
 import YieldValue from '@civ-clone/core-yield/Yield';
 import { expect } from 'chai';
+import CanStow from '../Rules/CanStow';
 
 class NavalTransport extends Transport(Naval) {
   constructor(
@@ -50,6 +51,9 @@ describe('Transport', () => {
       navalTransport = new NavalTransport(...unitArgs);
 
     ruleRegistry.register(
+      new CanStow(
+        new Effect((transport: ITransport) => transport.hasCapacity())
+      ),
       new Yield(
         new Criterion(
           (unit: Unit, unitYield: YieldValue): unitYield is Capacity =>
