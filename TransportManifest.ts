@@ -9,26 +9,26 @@ export interface ITransportManifest {
 }
 
 export class TransportManifest implements ITransportManifest {
-  #sourceTile: Tile;
-  #transport: ITransport;
-  #unit: Unit;
+  private _sourceTile: Tile;
+  private _transport: ITransport;
+  private _unit: Unit;
 
   constructor(transport: ITransport, unit: Unit, sourceTile: Tile) {
-    this.#transport = transport;
-    this.#unit = unit;
-    this.#sourceTile = sourceTile;
+    this._transport = transport;
+    this._unit = unit;
+    this._sourceTile = sourceTile;
   }
 
   sourceTile(): Tile {
-    return this.#sourceTile;
+    return this._sourceTile;
   }
 
   transport(): ITransport {
-    return this.#transport;
+    return this._transport;
   }
 
   unit(): Unit {
-    return this.#unit;
+    return this._unit;
   }
 }
 

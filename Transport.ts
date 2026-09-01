@@ -57,11 +57,17 @@ export const isTransport = (object: unknown): boolean => {
 
 export const Transport = (Base: typeof Unit) =>
   class Transport extends Base implements ITransport {
-    #ruleRegistry: RuleRegistry = ruleRegistryInstance;
-    #transportRegistry: TransportRegistry = transportRegistryInstance;
+    // Named apart from `Unit`'s `_ruleRegistry`, which this shadowed as
+    // `#ruleRegistry`. `Unit`'s is `private` and this one cannot be (TS4094 on
+    // an exported class expression), and a public member cannot shadow a
+    // private one of the same name. Renaming keeps the two slots separate, as
+    // they were: `Unit` takes an injected registry, this always used the
+    // singleton.
+    _transportRuleRegistry: RuleRegistry = ruleRegistryInstance;
+    _transportRegistry: TransportRegistry = transportRegistryInstance;
 
     canStow(unit: Unit): boolean {
-      return this.#ruleRegistry
+      return this._transportRuleRegistry
         .process(CanStow, this as ITransport, unit)
         .every((result) => result);
     }
@@ -73,7 +79,7 @@ export const Transport = (Base: typeof Unit) =>
     }
 
     cargo(): Unit[] {
-      return this.#transportRegistry
+      return this._transportRegistry
         .getByTransport(this as ITransport)
         .map((manifest: TransportManifest): Unit => manifest.unit());
     }
@@ -90,17 +96,17 @@ export const Transport = (Base: typeof Unit) =>
 
     hasCargo(): boolean {
       return (
-        this.#transportRegistry.getByTransport(this as ITransport).length > 0
+        this._transportRegistry.getByTransport(this as ITransport).length > 0
       );
     }
 
     // Ideally, these would be `protected`: https://github.com/microsoft/TypeScript/issues/30355
     setRuleRegistry(ruleRegistry: RuleRegistry): void {
-      this.#ruleRegistry = ruleRegistry;
+      this._transportRuleRegistry = ruleRegistry;
     }
 
     setTransportRegistry(transportRegistry: TransportRegistry): void {
-      this.#transportRegistry = transportRegistry;
+      this._transportRegistry = transportRegistry;
     }
 
     stow(unit: Unit, sourceTile: Tile = unit.tile()): boolean {
@@ -108,22 +114,22 @@ export const Transport = (Base: typeof Unit) =>
         return false;
       }
 
-      this.#transportRegistry.register(
+      this._transportRegistry.register(
         new TransportManifest(this as ITransport, unit, sourceTile)
       );
 
-      this.#ruleRegistry.process(Stowed, unit, this as ITransport);
+      this._transportRuleRegistry.process(Stowed, unit, this as ITransport);
 
       return true;
     }
 
     unload(unit: Unit) {
       try {
-        const manifest = this.#transportRegistry.getByUnit(unit);
+        const manifest = this._transportRegistry.getByUnit(unit);
 
-        this.#transportRegistry.unregister(manifest);
+        this._transportRegistry.unregister(manifest);
 
-        this.#ruleRegistry.process(Unloaded, unit, this as ITransport);
+        this._transportRuleRegistry.process(Unloaded, unit, this as ITransport);
 
         return true;
       } catch (e) {

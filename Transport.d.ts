@@ -21,8 +21,8 @@ export declare const Transport: (Base: typeof Unit) => {
     tile: Tile,
     ruleRegistry?: RuleRegistry
   ): {
-    '__#30@#ruleRegistry': RuleRegistry;
-    '__#30@#transportRegistry': TransportRegistry;
+    _transportRuleRegistry: RuleRegistry;
+    _transportRegistry: TransportRegistry;
     canStow(unit: Unit): boolean;
     capacity(): Capacity;
     cargo(): Unit[];
