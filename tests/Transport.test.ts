@@ -99,3 +99,47 @@ describe('Transport', () => {
     expect(ferry.unload(navalTransport as Unit)).false;
   });
 });
+
+describe('Transport#allTransient', (): void => {
+  const unitArgs = (): [
+    null,
+    Player,
+    Tile,
+    RuleRegistry,
+    TransportRegistry
+  ] => [
+    null,
+    null as unknown as Player,
+    null as unknown as Tile,
+    new RuleRegistry(),
+    new TransportRegistry(),
+  ];
+
+  // Saved, the registries came back from a load as plain arrays, and `cargo()` threw (civ-clone/web-renderer#228).
+  it('declares its registries transient, as well as what the unit type declares', (): void => {
+    const transient = new NavalTransport(...unitArgs()).allTransient();
+
+    expect(transient).include.members([
+      '_transportRegistry',
+      '_transportRuleRegistry',
+      '_ruleRegistry',
+      '_id',
+      '_keys',
+    ]);
+  });
+
+  it('declares them for a unit type that extends a transport', (): void => {
+    expect(new PassengerFerry(...unitArgs()).allTransient()).include.members([
+      '_transportRegistry',
+      '_transportRuleRegistry',
+    ]);
+  });
+
+  it("leaves them out of the state a save keeps, and keeps the unit's own", (): void => {
+    const stateKeys = new PassengerFerry(...unitArgs()).stateKeys();
+
+    expect(stateKeys).not.include('_transportRegistry');
+    expect(stateKeys).not.include('_transportRuleRegistry');
+    expect(stateKeys).include.members(['_player', '_tile', '_moves']);
+  });
+});

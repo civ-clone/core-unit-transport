@@ -55,8 +55,34 @@ export const isTransport = (object: unknown): boolean => {
   return false;
 };
 
-export const Transport = (Base: typeof Unit) =>
-  class Transport extends Base implements ITransport {
+// What the mixin adds to a unit: `ITransport`, and the two collaborators it holds with their setters.
+export interface ITransportUnit extends ITransport {
+  _transportRuleRegistry: RuleRegistry;
+  _transportRegistry: TransportRegistry;
+  setRuleRegistry(ruleRegistry: RuleRegistry): void;
+  setTransportRegistry(transportRegistry: TransportRegistry): void;
+  stow(unit: Unit, sourceTile?: Tile): boolean;
+}
+
+// A constructor TypeScript treats as a mixin, so that `typeof Unit & TransportMixin` constructs with `Unit`'s own
+//  arguments and returns a `Unit & ITransportUnit`.
+export type TransportMixin = new (...args: any[]) => ITransportUnit;
+
+// What `Transport(Base)` returns. Named rather than inferred: an inferred class type can't be written into the
+//  `.d.ts` (TS4094 for `Unit`'s `private` members, TS2742 for the types it reaches through other packages), so the
+//  package didn't compile (civ-clone/web-renderer#20).
+export type TransportClass = typeof Unit & TransportMixin;
+
+export const Transport = (Base: typeof Unit): TransportClass => {
+  class Transport extends Base implements ITransportUnit {
+    // Collaborators, which the loading game supplies (`Game.inject`), not saved state. Saved, each ship carried a dump
+    //  of every rule, and came back from a load holding arrays where the registries should be
+    //  (civ-clone/web-renderer#228).
+    static readonly transient = [
+      '_transportRegistry',
+      '_transportRuleRegistry',
+    ];
+
     // Named apart from `Unit`'s `_ruleRegistry`, which this shadowed as
     // `#ruleRegistry`. `Unit`'s is `private` and this one cannot be (TS4094 on
     // an exported class expression), and a public member cannot shadow a
@@ -136,6 +162,11 @@ export const Transport = (Base: typeof Unit) =>
         return false;
       }
     }
-  };
+  }
+
+  // Through `unknown` because `DataObject#_keys` is `(keyof this)[]`, which makes any subclass that adds a member
+  //  unassignable to its base, though every `Transport` is a `Unit` at runtime.
+  return Transport as unknown as TransportClass;
+};
 
 export default Transport;
