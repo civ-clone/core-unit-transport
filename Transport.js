@@ -37,68 +37,80 @@ const isTransport = (object) => {
     return false;
 };
 exports.isTransport = isTransport;
-const Transport = (Base) => class Transport extends Base {
-    constructor() {
-        super(...arguments);
-        // Named apart from `Unit`'s `_ruleRegistry`, which this shadowed as
-        // `#ruleRegistry`. `Unit`'s is `private` and this one cannot be (TS4094 on
-        // an exported class expression), and a public member cannot shadow a
-        // private one of the same name. Renaming keeps the two slots separate, as
-        // they were: `Unit` takes an injected registry, this always used the
-        // singleton.
-        this._transportRuleRegistry = RuleRegistry_1.instance;
-        this._transportRegistry = TransportRegistry_1.instance;
-    }
-    canStow(unit) {
-        return this._transportRuleRegistry
-            .process(CanStow_1.default, this, unit)
-            .every((result) => result);
-    }
-    capacity() {
-        const [unitYield] = this.yield(new Yields_1.Capacity());
-        return unitYield;
-    }
-    cargo() {
-        return this._transportRegistry
-            .getByTransport(this)
-            .map((manifest) => manifest.unit());
-    }
-    cargoWeight() {
-        const [unitYield] = this.yield(new Yields_1.CargoWeight());
-        return unitYield;
-    }
-    hasCapacity() {
-        return this.cargoWeight().value() < this.capacity().value();
-    }
-    hasCargo() {
-        return (this._transportRegistry.getByTransport(this).length > 0);
-    }
-    // Ideally, these would be `protected`: https://github.com/microsoft/TypeScript/issues/30355
-    setRuleRegistry(ruleRegistry) {
-        this._transportRuleRegistry = ruleRegistry;
-    }
-    setTransportRegistry(transportRegistry) {
-        this._transportRegistry = transportRegistry;
-    }
-    stow(unit, sourceTile = unit.tile()) {
-        if (!this.hasCapacity() || !this.canStow(unit)) {
-            return false;
+const Transport = (Base) => {
+    class Transport extends Base {
+        constructor() {
+            super(...arguments);
+            // Named apart from `Unit`'s `_ruleRegistry`, which this shadowed as
+            // `#ruleRegistry`. `Unit`'s is `private` and this one cannot be (TS4094 on
+            // an exported class expression), and a public member cannot shadow a
+            // private one of the same name. Renaming keeps the two slots separate, as
+            // they were: `Unit` takes an injected registry, this always used the
+            // singleton.
+            this._transportRuleRegistry = RuleRegistry_1.instance;
+            this._transportRegistry = TransportRegistry_1.instance;
         }
-        this._transportRegistry.register(new TransportManifest_1.default(this, unit, sourceTile));
-        this._transportRuleRegistry.process(Stowed_1.default, unit, this);
-        return true;
-    }
-    unload(unit) {
-        try {
-            const manifest = this._transportRegistry.getByUnit(unit);
-            this._transportRegistry.unregister(manifest);
-            this._transportRuleRegistry.process(Unloaded_1.default, unit, this);
+        canStow(unit) {
+            return this._transportRuleRegistry
+                .process(CanStow_1.default, this, unit)
+                .every((result) => result);
+        }
+        capacity() {
+            const [unitYield] = this.yield(new Yields_1.Capacity());
+            return unitYield;
+        }
+        cargo() {
+            return this._transportRegistry
+                .getByTransport(this)
+                .map((manifest) => manifest.unit());
+        }
+        cargoWeight() {
+            const [unitYield] = this.yield(new Yields_1.CargoWeight());
+            return unitYield;
+        }
+        hasCapacity() {
+            return this.cargoWeight().value() < this.capacity().value();
+        }
+        hasCargo() {
+            return (this._transportRegistry.getByTransport(this).length > 0);
+        }
+        // Ideally, these would be `protected`: https://github.com/microsoft/TypeScript/issues/30355
+        setRuleRegistry(ruleRegistry) {
+            this._transportRuleRegistry = ruleRegistry;
+        }
+        setTransportRegistry(transportRegistry) {
+            this._transportRegistry = transportRegistry;
+        }
+        stow(unit, sourceTile = unit.tile()) {
+            if (!this.hasCapacity() || !this.canStow(unit)) {
+                return false;
+            }
+            this._transportRegistry.register(new TransportManifest_1.default(this, unit, sourceTile));
+            this._transportRuleRegistry.process(Stowed_1.default, unit, this);
             return true;
         }
-        catch (e) {
-            return false;
+        unload(unit) {
+            try {
+                const manifest = this._transportRegistry.getByUnit(unit);
+                this._transportRegistry.unregister(manifest);
+                this._transportRuleRegistry.process(Unloaded_1.default, unit, this);
+                return true;
+            }
+            catch (e) {
+                return false;
+            }
         }
     }
+    // Collaborators, which the loading game supplies (`Game.inject`), not saved state. Saved, each ship carried a dump
+    //  of every rule, and came back from a load holding arrays where the registries should be
+    //  (civ-clone/web-renderer#228).
+    Transport.transient = [
+        '_transportRegistry',
+        '_transportRuleRegistry',
+    ];
+    // Through `unknown` because `DataObject#_keys` is `(keyof this)[]`, which makes any subclass that adds a member
+    //  unassignable to its base, though every `Transport` is a `Unit` at runtime.
+    return Transport;
 };
 exports.Transport = Transport;
 exports.default = exports.Transport;
